@@ -1,0 +1,25 @@
+[debug] [2022-05-02T06:25:19.508Z] ----------------------------------------------------------------------
+[debug] [2022-05-02T06:25:19.509Z] Command:       /Users/nikhil/.nvm/versions/node/v16.0.0/bin/node /Users/nikhil/.nvm/versions/node/v16.0.0/bin/firebase init
+[debug] [2022-05-02T06:25:19.509Z] CLI Version:   10.7.2
+[debug] [2022-05-02T06:25:19.509Z] Platform:      darwin
+[debug] [2022-05-02T06:25:19.509Z] Node Version:  v16.0.0
+[debug] [2022-05-02T06:25:19.509Z] Time:          Mon May 02 2022 11:55:19 GMT+0530 (India Standard Time)
+[debug] [2022-05-02T06:25:19.509Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-05-02T06:25:19.539Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-05-02T06:25:19.539Z] > authorizing via signed-in user (nikhil.yeole36@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/nikhil/Documents/code/peepal/firebase-quickstart-js-master-messaging
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+

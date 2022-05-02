@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "staging": "trial-web-push-firebase"
+  },
+  "targets": {}
+}
