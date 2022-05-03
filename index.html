@@ -87,7 +87,7 @@ const firebaseConfig = {
   measurementId: "G-M67JMQPDLD"
 };
 
-firebase.initializeApp(firebaseConfig)
+firebase.initializeApp(firebaseConfig);
 
   // Retrieve Firebase Messaging object.
   const messaging = firebase.messaging();
@@ -113,7 +113,7 @@ firebase.initializeApp(firebaseConfig)
     // subsequent calls to getToken will return from cache.
     messaging.getToken({vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA'}).then((currentToken) => {
       if (currentToken) {
-        sendTokenToServer(currentToken);
+        sendTokenToServerIfNotAlreadySent(currentToken);
         updateUIForPushEnabled(currentToken);
       } else {
         // Show permission request.
@@ -139,7 +139,7 @@ firebase.initializeApp(firebaseConfig)
   // Send the registration token your application server, so that it can:
   // - send messages back to this app
   // - subscribe/unsubscribe the token from topics
-  function sendTokenToServer(currentToken) {
+  function sendTokenToServerIfNotAlreadySent(currentToken) {
     if (!isTokenSentToServer()) {
       console.log('Sending token to server...');
       // TODO(developer): Send the current token to your server.
