@@ -44,24 +44,16 @@ limitations under the License.
       <!-- Container for the Table of content -->
       <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
         <div class="mdl-card__supporting-text mdl-color-text--grey-600">
-          <!-- div to display the generated registration token -->
-          <div id="token_div" style="display: none;">
-            <h4>Registration Token</h4>
-            <p id="token" style="word-break: break-all;"></p>
+          <div id="subscribe">
+            <h4>Subscribe</h4>
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                    onclick="deleteToken()">Delete Token</button>
+                    onclick="subscribe()">Request Permission(Subscribe)</button>
           </div>
-          <!-- div to display the UI to allow the request for permission to
-               notify the user. This is shown if the app has not yet been
-               granted permission to notify. -->
-          <div id="permission_div" style="display: none;">
-            <h4>Needs Permission</h4>
-            <p id="token"></p>
+          <div id="unsubscribe">
+            <h4>Unsubscribe</h4>
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                    onclick="requestPermission()">Request Permission</button>
+                    onclick="unsubscribe()">Delete Token(Unsubscribe)</button>
           </div>
-          <!-- div to display messages received by this app. -->
-          <div id="messages"></div>
         </div>
       </div>
 
@@ -92,9 +84,6 @@ firebase.initializeApp(firebaseConfig);
   // Retrieve Firebase Messaging object.
   const messaging = firebase.messaging();
 
-  // IDs of divs that display registration token UI or request permission UI.
-  const tokenDivId = 'token_div';
-  const permissionDivId = 'permission_div';
 
   // Handle incoming messages. Called when:
   // - a message is received while the app has focus
@@ -102,51 +91,38 @@ firebase.initializeApp(firebaseConfig);
   //   `messaging.onBackgroundMessage` handler.
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
-    // Update the UI to include the received message.
-    appendMessage(payload);
   });
 
-  function resetUI() {
-    clearMessages();
-    showToken('loading...');
+  function subscribe() {
     // Get registration token. Initially this makes a network call, once retrieved
     // subsequent calls to getToken will return from cache.
     messaging.getToken({vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA'}).then((currentToken) => {
       if (currentToken) {
         sendTokenToServerIfNotAlreadySent(currentToken);
-        updateUIForPushEnabled(currentToken);
       } else {
         // Show permission request.
         console.log('No registration token available. Request permission to generate one.');
         // Show permission UI.
-        updateUIForPushPermissionRequired();
         setTokenSentToServer(false);
       }
     }).catch((err) => {
       console.log('An error occurred while retrieving token. ', err);
-      showToken('Error retrieving registration token. ', err);
       setTokenSentToServer(false);
     });
   }
 
-
-  function showToken(currentToken) {
-    // Show token in console and UI.
-    const tokenElement = document.querySelector('#token');
-    tokenElement.textContent = currentToken;
-  }
 
   // Send the registration token your application server, so that it can:
   // - send messages back to this app
   // - subscribe/unsubscribe the token from topics
   function sendTokenToServerIfNotAlreadySent(currentToken) {
     if (!isTokenSentToServer()) {
-      console.log('Sending token to server...');
+      console.log('Sending token to server...Token: ', currentToken);
       // TODO(developer): Send the current token to your server.
       setTokenSentToServer(true);
     } else {
       console.log('Token already sent to server so won\'t send it again ' +
-          'unless it changes');
+          'unless it changes. Token: ', currentToken);
     }
   }
 
@@ -158,14 +134,6 @@ firebase.initializeApp(firebaseConfig);
     window.localStorage.setItem('sentToServer', sent ? '1' : '0');
   }
 
-  function showHideDiv(divId, show) {
-    const div = document.querySelector('#' + divId);
-    if (show) {
-      div.style = 'display: visible';
-    } else {
-      div.style = 'display: none';
-    }
-  }
 
   function requestPermission() {
     console.log('Requesting permission...');
@@ -182,55 +150,19 @@ firebase.initializeApp(firebaseConfig);
     });
   }
 
-  function deleteToken() {
+  function unsubscribe() {
     // Delete registration token.
     messaging.getToken().then((currentToken) => {
       messaging.deleteToken(currentToken).then(() => {
-        console.log('Token deleted.');
-        setTokenSentToServer(false);
-        // Once token is deleted update UI.
-        resetUI();
+        console.log('Token deleted.')
       }).catch((err) => {
         console.log('Unable to delete token. ', err);
       });
     }).catch((err) => {
       console.log('Error retrieving registration token. ', err);
-      showToken('Error retrieving registration token. ', err);
     });
   }
 
-  // Add a message to the messages element.
-  function appendMessage(payload) {
-    const messagesElement = document.querySelector('#messages');
-    const dataHeaderElement = document.createElement('h5');
-    const dataElement = document.createElement('pre');
-    dataElement.style = 'overflow-x:hidden;';
-    dataHeaderElement.textContent = 'Received message:';
-    dataElement.textContent = JSON.stringify(payload, null, 2);
-    messagesElement.appendChild(dataHeaderElement);
-    messagesElement.appendChild(dataElement);
-  }
-
-  // Clear the messages element of all children.
-  function clearMessages() {
-    const messagesElement = document.querySelector('#messages');
-    while (messagesElement.hasChildNodes()) {
-      messagesElement.removeChild(messagesElement.lastChild);
-    }
-  }
-
-  function updateUIForPushEnabled(currentToken) {
-    showHideDiv(tokenDivId, true);
-    showHideDiv(permissionDivId, false);
-    showToken(currentToken);
-  }
-
-  function updateUIForPushPermissionRequired() {
-    showHideDiv(tokenDivId, false);
-    showHideDiv(permissionDivId, true);
-  }
-
-  resetUI();
 </script>
 </body>
 </html>
