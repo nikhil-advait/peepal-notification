@@ -57,15 +57,11 @@ limitations under the License.
 
   firebase.initializeApp(firebaseConfig);
 
-  // messaging.isSupported().then(function(bool){
-  //   if(!bool){
-  //     buttonEl.disabled = true;
-  //     logEl.innerText = "This browser does not support web notifications. Please use other browser."
-  //     console.log("This browser doesn't support web notifications");
-  //   } else {
-  //     checkNotificationPermission()
-  //   }
-  // })
+
+  const getTokenOptions = {vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA'};
+  const buttonEl = document.querySelector("#sub-button");
+  const logEl = document.querySelector("#log");
+  const deniedMsg = "You have denied(disabled) web notifications. Please allow notifications for 'peepalfarm.org' by changing setting in your browser.";
 
   if(firebase.messaging.isSupported){
     checkNotificationPermission()
@@ -78,11 +74,6 @@ limitations under the License.
     // Retrieve Firebase Messaging object.
   const messaging = firebase.messaging();
 
-  const getTokenOptions = {vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA'};
-
-  const buttonEl = document.querySelector("#sub-button");
-  const logEl = document.querySelector("#log");
-
   // Handle incoming messages. Called when:
   // - a message is received while the app has focus
   // - the user clicks on an app notification created by a service worker
@@ -94,18 +85,15 @@ limitations under the License.
 
 
   function checkNotificationPermission() {
-    Notification.requestPermission().then((permission) => {
-      if(localStorage.getItem("isSubscribed") === "yes") {
-        buttonEl.innerText = "Unsubscribe";
-        logEl.innerText = "You have already subscribed. You will get web notification whenever new videos get uploaded."
-      }
+    if(localStorage.getItem("isSubscribed") === "yes") {
+      buttonEl.innerText = "Unsubscribe";
+      logEl.innerText = "You have already subscribed. You will get web notification whenever new videos get uploaded.";
+    }
 
-      if(permission === "denied") {    
-        logEl.innerText = "You have disabled web notifications. Please allow notifications for PeepalFarm by changing setting in your browser."
-        buttonEl.disabled = true;
-      }
-
-    });
+    if(Notification.permission === "denied") {    
+      logEl.innerText = deniedMsg;
+      buttonEl.disabled = true;
+    }
   }
 
   function handleSubscription(){
@@ -131,7 +119,12 @@ limitations under the License.
         logEl.innerText = "Error occurred: Please try again";
       }
     }).catch((err) => {
-      logEl.innerText = "Error occurred: while subscribing. Please try again."
+      if(Notification.permission === "denied"){
+        logEl.innerText = deniedMsg;
+      } else {
+        logEl.innerText = "Error occurred: while subscribing. Please try again.";
+      }
+      console.log("Error occurred: while subscribing. Please try again.", err);
     }).finally(_ => buttonEl.disabled = false);
   }
 
