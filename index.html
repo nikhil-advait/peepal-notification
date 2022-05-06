@@ -20,47 +20,23 @@ limitations under the License.
   <!-- Material Design Theming -->
   <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.orange-indigo.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
-
-  <link rel="stylesheet" href="main.css">
 
   <link rel="manifest" href="/manifest.json">
 </head>
 <body>
-<div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <div>
+    <p>
+      Subscribing to web notification allows you to get notification whenever new video gets published. You can unsubscribe anytime you want.
+    </p>
+    <br/>
+    <br/>
 
-  <!-- Header section containing title -->
-  <header class="mdl-layout__header mdl-color-text--white mdl-color--light-blue-700">
-    <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
-      <div class="mdl-layout__header-row mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--8-col-desktop">
-        <h3>Firebase Cloud Messaging v4</h3>
-      </div>
-    </div>
-  </header>
-
-  <main class="mdl-layout__content mdl-color--grey-100">
-    <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
-
-      <!-- Container for the Table of content -->
-      <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
-        <div class="mdl-card__supporting-text mdl-color-text--grey-600">
-          <div id="subscribe">
-            <h4>Subscribe</h4>
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                    onclick="subscribe()">Request Permission(Subscribe)</button>
-          </div>
-          <div id="unsubscribe">
-            <h4>Unsubscribe</h4>
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-                    onclick="unsubscribe()">Delete Token(Unsubscribe)</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </main>
-</div>
-
+    <button id="sub-button" onclick="handleSubscription()">Subscribe</button>
+    
+    <!-- Inner text will be set in code -->
+    <p id="log"></p>
+  </div>
+          
 <!-- Import and configure the Firebase SDK -->
 <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
 <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
@@ -69,21 +45,43 @@ limitations under the License.
 
 <script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBrdpBDDUPrfTuWcg49do7rtKHnoT3nzyQ",
-  authDomain: "trial-web-push-firebase.firebaseapp.com",
-  projectId: "trial-web-push-firebase",
-  storageBucket: "trial-web-push-firebase.appspot.com",
-  messagingSenderId: "55513369041",
-  appId: "1:55513369041:web:c22e564480032fcbf9f8f0",
-  measurementId: "G-M67JMQPDLD"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyBrdpBDDUPrfTuWcg49do7rtKHnoT3nzyQ",
+    authDomain: "trial-web-push-firebase.firebaseapp.com",
+    projectId: "trial-web-push-firebase",
+    storageBucket: "trial-web-push-firebase.appspot.com",
+    messagingSenderId: "55513369041",
+    appId: "1:55513369041:web:c22e564480032fcbf9f8f0",
+    measurementId: "G-M67JMQPDLD"
+  };
 
-firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
 
-  // Retrieve Firebase Messaging object.
+  // messaging.isSupported().then(function(bool){
+  //   if(!bool){
+  //     buttonEl.disabled = true;
+  //     logEl.innerText = "This browser does not support web notifications. Please use other browser."
+  //     console.log("This browser doesn't support web notifications");
+  //   } else {
+  //     checkNotificationPermission()
+  //   }
+  // })
+
+  if(firebase.messaging.isSupported){
+    checkNotificationPermission()
+  } else {
+    buttonEl.disabled = true;
+    logEl.innerText = "This browser does not support web notifications. Please use other browser."
+    console.log("This browser doesn't support web notifications");
+  }
+
+    // Retrieve Firebase Messaging object.
   const messaging = firebase.messaging();
 
+  const getTokenOptions = {vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA'};
+
+  const buttonEl = document.querySelector("#sub-button");
+  const logEl = document.querySelector("#log");
 
   // Handle incoming messages. Called when:
   // - a message is received while the app has focus
@@ -91,76 +89,71 @@ firebase.initializeApp(firebaseConfig);
   //   `messaging.onBackgroundMessage` handler.
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
+    // Todo: handle. Show alert?
   });
 
-  function subscribe() {
-    // Get registration token. Initially this makes a network call, once retrieved
-    // subsequent calls to getToken will return from cache.
-    messaging.getToken({vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA'}).then((currentToken) => {
-      if (currentToken) {
-        sendTokenToServerIfNotAlreadySent(currentToken);
-      } else {
-        // Show permission request.
-        console.log('No registration token available. Request permission to generate one.');
-        // Show permission UI.
-        setTokenSentToServer(false);
+
+  function checkNotificationPermission() {
+    Notification.requestPermission().then((permission) => {
+      if(localStorage.getItem("isSubscribed") === "yes") {
+        buttonEl.innerText = "Unsubscribe";
+        logEl.innerText = "You have already subscribed. You will get web notification whenever new videos get uploaded."
       }
-    }).catch((err) => {
-      console.log('An error occurred while retrieving token. ', err);
-      setTokenSentToServer(false);
+
+      if(permission === "denied") {    
+        logEl.innerText = "You have disabled web notifications. Please allow notifications for PeepalFarm by changing setting in your browser."
+        buttonEl.disabled = true;
+      }
+
     });
   }
 
-
-  // Send the registration token your application server, so that it can:
-  // - send messages back to this app
-  // - subscribe/unsubscribe the token from topics
-  function sendTokenToServerIfNotAlreadySent(currentToken) {
-    if (!isTokenSentToServer()) {
-      console.log('Sending token to server...Token: ', currentToken);
-      // TODO(developer): Send the current token to your server.
-      setTokenSentToServer(true);
+  function handleSubscription(){
+    if(localStorage.getItem("isSubscribed") === "yes"){
+      unsubscribe()
     } else {
-      console.log('Token already sent to server so won\'t send it again ' +
-          'unless it changes. Token: ', currentToken);
+      subscribe()
     }
   }
 
-  function isTokenSentToServer() {
-    return window.localStorage.getItem('sentToServer') === '1';
-  }
-
-  function setTokenSentToServer(sent) {
-    window.localStorage.setItem('sentToServer', sent ? '1' : '0');
-  }
-
-
-  function requestPermission() {
-    console.log('Requesting permission...');
-    Notification.requestPermission().then((permission) => {
-      if (permission === 'granted') {
-        console.log('Notification permission granted.');
-        // TODO(developer): Retrieve a registration token for use with FCM.
-        // In many cases once an app has been granted notification permission,
-        // it should update its UI reflecting this.
-        resetUI();
+  function subscribe() {
+    logEl.innerText = "Subscribing....Please wait";
+    buttonEl.disabled = true;
+    // Get registration token. Initially this makes a network call, once retrieved
+    // subsequent calls to getToken will return from cache.
+    messaging.getToken(getTokenOptions).then((currentToken) => {
+      if (currentToken) {
+        localStorage.setItem("isSubscribed", "yes");
+        buttonEl.innerText = "Unsubscribe";
+        logEl.innerText = "Subscribed. Thanks! You will get web notification whenever new videos get uploaded";
       } else {
-        console.log('Unable to get permission to notify.');
+        // Should rarely come here. 
+        logEl.innerText = "Error occurred: Please try again";
       }
-    });
+    }).catch((err) => {
+      logEl.innerText = "Error occurred: while subscribing. Please try again."
+    }).finally(_ => buttonEl.disabled = false);
   }
 
   function unsubscribe() {
+    logEl.innerText = "Unsubscribing....Please wait";
+    buttonEl.disabled = true;
+
     // Delete registration token.
-    messaging.getToken().then((currentToken) => {
+    messaging.getToken(getTokenOptions).then((currentToken) => {
       messaging.deleteToken(currentToken).then(() => {
-        console.log('Token deleted.')
+        localStorage.setItem("isSubscribed", "no");
+        buttonEl.innerText = "Subscribe";
+        logEl.innerText = "Unsubscribed. You will not get notifications going forward.";
       }).catch((err) => {
+        logEl.innerText = "Error: Couldn't unsubscribe. Please try again";
         console.log('Unable to delete token. ', err);
-      });
+      }).finally(_ => buttonEl.disabled = false);
+
     }).catch((err) => {
-      console.log('Error retrieving registration token. ', err);
-    });
+      logEl.innerText = "Error occurred: Couldn't unsubscribe. Please try again."
+      console.log("Error retrieving registration token. ", err);
+    }).finally(_ => buttonEl.disabled = false);
   }
 
 </script>

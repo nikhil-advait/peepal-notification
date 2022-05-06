@@ -1,7 +1,0 @@
-{
-  "projects": {
-    "staging": "trial-web-push-firebase",
-    "default": "trial-web-push-firebase"
-  },
-  "targets": {}
-}
