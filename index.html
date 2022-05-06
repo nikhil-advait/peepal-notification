@@ -150,6 +150,7 @@ limitations under the License.
         localStorage.setItem("isSubscribed", "yes");
         buttonEl.innerText = "Unsubscribe";
         logEl.innerText = "Subscribed. Thanks! You will get web notification whenever new videos get uploaded";
+        console.log("token: ", currentToken);
       } else {
         // Should rarely come here. 
         logEl.innerText = "Error occurred: Please try again";
