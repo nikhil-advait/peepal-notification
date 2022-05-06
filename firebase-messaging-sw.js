@@ -1,5 +1,6 @@
 
 /*
+v2
  * Here is is the code snippet to initialize Firebase Messaging in the Service
  * Worker when your app is not hosted on Firebase Hosting.
 */
@@ -43,7 +44,7 @@ self.addEventListener('notificationclick', function (e) {
 
 });
 
-/*
+
  // Retrieve an instance of Firebase Messaging so that it can handle background
  // messages.
  const messaging = firebase.messaging();
@@ -71,5 +72,3 @@ messaging.onBackgroundMessage(function(payload) {
   // self.registration.showNotification(notificationTitle, notificationOptions);
 
 });
-
-*/
