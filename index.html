@@ -94,10 +94,10 @@ limitations under the License.
   const logEl = document.querySelector("#log");
   const deniedMsg = "You have denied(disabled) web notifications. Please allow notifications for 'peepalfarm.org' by changing setting in your browser.";
 
-  // navigator
-  //   .serviceWorker
-  //   .register('./firebase-messaging-sw.js')
-  //   .then(registration => getTokenOptions.serviceWorkerRegistration = registration)
+  navigator
+    .serviceWorker
+    .register('./firebase-messaging-sw.js')
+    .then(registration => getTokenOptions.serviceWorkerRegistration = registration)
 
   if(firebase.messaging.isSupported){
     checkNotificationPermission()
