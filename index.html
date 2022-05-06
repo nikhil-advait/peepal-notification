@@ -15,26 +15,57 @@ limitations under the License.
 <head>
   <meta charset=utf-8 />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firebase Cloud Messaging Example</title>
-
-  <!-- Material Design Theming -->
-  <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.orange-indigo.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
+  <title>Web Notifications</title>
+  <link rel="stylesheet" href="https://peepalfarm.org/static/peepalfarm/stylesheet.css?123">
   <link rel="manifest" href="/manifest.json">
 </head>
 <body>
-  <div>
-    <p>
-      Subscribing to web notification allows you to get notification whenever new video gets published. You can unsubscribe anytime you want.
-    </p>
-    <br/>
-    <br/>
+  <style>
+    .sub-btn {
+      background: green;
+      color: white;
+      border-radius: 3px;
+      padding: 10px 5px;
+      display: block;
+      width: 130px;
+      height: 40px;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
 
-    <button id="sub-button" onclick="handleSubscription()">Subscribe</button>
+    .sub-btn:disabled {
+      background: gray;
+    }
+
+    .para {
+	    font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+  </style>
+  <div id="wrapper">
+    <section id="main_content">
+      <article id="content" class="markdown-body">
+        <p class="para">
+          Subscribing to web notification allows you to get notification whenever new video gets published. You can unsubscribe anytime you want.
+        </p>
+        <br/>
+        <br/>
     
-    <!-- Inner text will be set in code -->
-    <p id="log"></p>
+        <div class="box">
+          <button class="sub-btn" id="sub-button" onclick="handleSubscription()">Subscribe</button>
+          <!-- Inner text will be set in code -->
+          <em id="log"></em>
+        </div>
+      </article>
+    </section>
   </div>
           
 <!-- Import and configure the Firebase SDK -->
