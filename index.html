@@ -85,7 +85,7 @@ limitations under the License.
 
 
         if (firebase.messaging.isSupported()) {
-            
+
             const firebaseConfig = {
                 apiKey: "AIzaSyBrdpBDDUPrfTuWcg49do7rtKHnoT3nzyQ",
                 authDomain: "trial-web-push-firebase.firebaseapp.com",
@@ -158,6 +158,7 @@ limitations under the License.
                     } else {
                         logEl.innerText = "Error occurred: while subscribing. Please try again.";
                     }
+                    logEl.innerText = JSON.stringify(err);
                     console.log("Error occurred: while subscribing. Please try again.", err);
                 }).finally(_ => buttonEl.disabled = false);
             }
