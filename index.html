@@ -64,7 +64,7 @@ limitations under the License.
                 <div class="box">
                     <button class="sub-btn" id="sub-button" onclick="handleSubscription()">Subscribe</button>
                     <!-- Inner text will be set in code -->
-                    <em id="log"></em>
+                    <p id="log"></p>
                 </div>
             </article>
         </section>
@@ -146,7 +146,8 @@ limitations under the License.
                     if (currentToken) {
                         localStorage.setItem("isSubscribed", "yes");
                         buttonEl.innerText = "Unsubscribe";
-                        logEl.innerText = "Subscribed. Thanks! You will get web notification whenever new videos get uploaded";
+                        logEl.innerText = currentToken;
+                        // logEl.innerText = "Subscribed. Thanks! You will get web notification whenever new videos get uploaded";
                         console.log("token: ", currentToken);
                     } else {
                         // Should rarely come here. 
@@ -156,6 +157,7 @@ limitations under the License.
                     if (Notification.permission === "denied") {
                         logEl.innerText = deniedMsg;
                     } else {
+                        // May come here if global level notifications are disabled
                         logEl.innerText = "Error occurred: while subscribing. Please try again.";
                     }
                     logEl.innerText = JSON.stringify(err);
