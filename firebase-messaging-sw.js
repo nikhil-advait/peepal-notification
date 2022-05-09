@@ -1,6 +1,5 @@
 
 /*
-v2
  * Here is is the code snippet to initialize Firebase Messaging in the Service
  * Worker when your app is not hosted on Firebase Hosting.
 */
@@ -37,17 +36,15 @@ self.addEventListener('notificationclick', function (e) {
     const urlToOpen = e.notification.data.FCM_MSG.data.urlToOpen || defaultUrlToOpen;
     const redirectUrl = "redirect?urlToOpen=" + urlToOpen;
     
-
     e.waitUntil(clients.openWindow(redirectUrl));
 
     // e.waitUntil(clients.openWindow(e.notification.data.FCM_MSG.data.urlToOpen));
 
-    // This is still openeing link in browser browser. 
-    //e.waitUntil(clients.openWindow("intent://8xn9iq3lG_w/#Intent;scheme=vnd.youtube;package=com.google.android.youtube;S.browser_fallback_url=https://www.youtube.com/watch?v=w_f0vwZcRMw;end;"));
+    // This is still openeing link in browser. 
+    // e.waitUntil(clients.openWindow("intent://8xn9iq3lG_w/#Intent;scheme=vnd.youtube;package=com.google.android.youtube;S.browser_fallback_url=https://www.youtube.com/watch?v=w_f0vwZcRMw;end;"));
 
     // This works but <a> tag is not possible in service worker file.
     // <a href="intent://8xn9iq3lG_w/#Intent;scheme=vnd.youtube;package=com.google.android.youtube;S.browser_fallback_url=https://www.youtube.com/watch?v=w_f0vwZcRMw;end;">youtube or market</a>
-
 });
 
 

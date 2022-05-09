@@ -8,11 +8,24 @@
 </head>
 <body>
     <p>Redirecting to Peepalfarm video...</p>
+
+    <!-- <a id="youtube_link" target="_self" href="intent://m.youtube.com/watch?v=ja00jEp6P1g/#Intent;package=com.google.android.youtube;scheme=https;end" style="text-decoration: none; color: rgb(14, 113, 226); font-size: 20px; font-family: system-ui;">CLICK HERE</a> -->
+    <a id="youtube_link" target="_self" href="">Watch Video</a>
+
     <script>
         const urlToOpen = window.location.href.split("urlToOpen=")[1];
         console.log("redirect.html: window.location.href: ", window.location.href);
         console.log("redirect.html: urlToOpen: ", urlToOpen);
-        window.open(urlToOpen, "_self");
+        const aTag = document.querySelector("#youtube_link");
+        const isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
+        
+        if(isAndroid) {
+            aTag.href = urlToOpen.replace("https", "intent") + "/#Intent;package=com.google.android.youtube;scheme=https;end";
+        } else {
+            aTag.href = urlToOpen;
+        }
+
+        //window.open(urlToOpen, "_self");
     </script>
 </body>
 </html>
