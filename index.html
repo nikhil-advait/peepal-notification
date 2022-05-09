@@ -1,16 +1,4 @@
 <!DOCTYPE html>
-<!--
-Copyright (c) 2016 Google Inc.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
 <html>
 
 <head>
@@ -23,177 +11,211 @@ limitations under the License.
 
 <body>
     <style>
-        .sub-btn {
-            background: green;
-            color: white;
-            border-radius: 3px;
-            padding: 10px 5px;
-            display: block;
-            width: 130px;
-            height: 40px;
-            font-size: 16px;
-            margin-bottom: 8px;
+        /* =======================  Start of notification button style =======================  */
+
+        .notification-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
         }
 
-        .sub-btn:disabled {
-            background: gray;
+        .notification-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
 
-        .para {
-            font-size: 18px;
-            line-height: 1.5;
+        .notification-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 34px;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
         }
 
-        .box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .notification-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            -webkit-transition: .4s;
+            transition: .4s;
         }
+
+        input:checked+.notification-slider {
+            background-color: green;
+        }
+
+        input:focus+.notification-slider {
+            box-shadow: 0 0 1px green;
+        }
+
+        input:checked+.notification-slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* =======================  End of notification button style =======================  */
     </style>
-    <div id="wrapper">
-        <section id="main_content">
-            <article id="content" class="markdown-body">
-                <p class="para">
-                    Subscribing to web notification allows you to get notification whenever new video gets published.
-                    You can unsubscribe anytime you want.
-                </p>
-                <br />
-                <br />
+    <div>v2</div>
+    <span id="notification-btn-text">Subscribe</span>
+    <label class="notification-switch">
+        <input type="checkbox" onclick="onNotificationButtonClick(event)">
+        <span class="notification-slider"></span>
+    </label>
 
-                <div class="box">
-                    <button class="sub-btn" id="sub-button" onclick="handleSubscription()">Subscribe</button>
-                    <!-- Inner text will be set in code -->
-                    <p id="log"></p>
-                </div>
-            </article>
-        </section>
-    </div>
 
     <!-- Import and configure the Firebase SDK -->
-    <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
-    <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
 
     <script>
 
-        const getTokenOptions = { vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA' };
-        const buttonEl = document.querySelector("#sub-button");
-        const logEl = document.querySelector("#log");
-        const deniedMsg = "You have denied(disabled) web notifications. Please allow notifications for 'peepalfarm.org' by changing setting in your browser.";
+        let onNotificationButtonClick;
 
+        function notificationInit () {
+            const getTokenOptions = { vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA' };
+            const buttonEl = document.querySelector(".notification-switch");
+            const buttonNameEl = document.querySelector("#notification-btn-text");
+            let messaging;
 
-        if (firebase.messaging.isSupported()) {
+            if (firebase.messaging.isSupported()) {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBrdpBDDUPrfTuWcg49do7rtKHnoT3nzyQ",
+                    authDomain: "trial-web-push-firebase.firebaseapp.com",
+                    projectId: "trial-web-push-firebase",
+                    storageBucket: "trial-web-push-firebase.appspot.com",
+                    messagingSenderId: "55513369041",
+                    appId: "1:55513369041:web:c22e564480032fcbf9f8f0",
+                    measurementId: "G-M67JMQPDLD"
+                };
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyBrdpBDDUPrfTuWcg49do7rtKHnoT3nzyQ",
-                authDomain: "trial-web-push-firebase.firebaseapp.com",
-                projectId: "trial-web-push-firebase",
-                storageBucket: "trial-web-push-firebase.appspot.com",
-                messagingSenderId: "55513369041",
-                appId: "1:55513369041:web:c22e564480032fcbf9f8f0",
-                measurementId: "G-M67JMQPDLD"
-            };
+                firebase.initializeApp(firebaseConfig);
 
-            firebase.initializeApp(firebaseConfig);
+                navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                    .then(registration => getTokenOptions.serviceWorkerRegistration = registration);
 
-            navigator
-                .serviceWorker
-                .register('./firebase-messaging-sw.js')
-                .then(registration => getTokenOptions.serviceWorkerRegistration = registration)
+                // Retrieve Firebase Messaging object.
+                messaging = firebase.messaging();
 
-            // Retrieve Firebase Messaging object.
-            const messaging = firebase.messaging();
+                // Handle incoming messages. Called when:
+                // - a message is received while the app has focus
+                // - the user clicks on an app notification created by a service worker
+                //   `messaging.onBackgroundMessage` handler.
+                messaging.onMessage((payload) => {
+                    console.log('Message received. ', payload);
+                    // Todo: handle. Show alert?
+                });
 
-            // Handle incoming messages. Called when:
-            // - a message is received while the app has focus
-            // - the user clicks on an app notification created by a service worker
-            //   `messaging.onBackgroundMessage` handler.
-            messaging.onMessage((payload) => {
-                console.log('Message received. ', payload);
-                // Todo: handle. Show alert?
-            });
-
-            checkNotificationPermission()
-
-            function checkNotificationPermission() {
                 if (localStorage.getItem("isSubscribed") === "yes") {
-                    buttonEl.innerText = "Unsubscribe";
-                    logEl.innerText = "You have already subscribed. You will get web notification whenever new videos get uploaded.";
-                }
-
-                if (Notification.permission === "denied") {
-                    logEl.innerText = deniedMsg;
-                    buttonEl.disabled = true;
+                    setName("Unsubscribe", true);
+                    showMessage("You have already subscribed. You will get web notification whenever new videos get uploaded.", true);
                 }
             }
 
-            function handleSubscription() {
-                if (localStorage.getItem("isSubscribed") === "yes") {
-                    unsubscribe()
+
+            function handleSubscription(event) {
+                if (firebase.messaging.isSupported()) {
+                    if (Notification.permission === "denied") {
+                        event.preventDefault();
+                        showMessage("You have denied(disabled) web notifications. Please allow notifications for 'peepalfarm.org' by changing setting in your browser.");
+                        return;
+                    }
+
+                    if (localStorage.getItem("isSubscribed") === "yes") {
+                        unsubscribe();
+                    } else {
+                        subscribe();
+                    }
+
                 } else {
-                    subscribe()
+                    event.preventDefault();
+                    showMessage("This browser does not support web notifications. Please use other browser.");
                 }
+
+            }
+
+
+            function showMessage(msg, onlyLogToConsole) {
+                if (!onlyLogToConsole) {
+
+                }
+                console.log(msg);
+            }
+
+            function setName(str, shouldToggleButton) {
+                buttonNameEl.innerText = str;
+                if (shouldToggleButton) {
+                    toggleButton()
+                }
+            }
+
+            function toggleButton() {
+                let inputEl = document.querySelector(".notification-switch input");
+                inputEl.checked = !inputEl.checked;
             }
 
             function subscribe() {
-                logEl.innerText = "Subscribing....Please wait";
-                buttonEl.disabled = true;
+                showMessage("Subscribing....Please wait", true);
                 // Get registration token. Initially this makes a network call, once retrieved
                 // subsequent calls to getToken will return from cache.
                 messaging.getToken(getTokenOptions).then((currentToken) => {
                     if (currentToken) {
                         localStorage.setItem("isSubscribed", "yes");
-                        buttonEl.innerText = "Unsubscribe";
-                        logEl.innerText = currentToken;
-                        // logEl.innerText = "Subscribed. Thanks! You will get web notification whenever new videos get uploaded";
+                        setName("Unsubscribe");
+                        showMessage("Subscribed. Thanks! You will get web notification whenever new videos get uploaded", true);
                         console.log("token: ", currentToken);
                     } else {
                         // Should rarely come here. 
-                        logEl.innerText = "Error occurred: Please try again";
+                        showMessage("Error occurred while subscribing. Please try again");
                     }
                 }).catch((err) => {
-                    if (Notification.permission === "denied") {
-                        logEl.innerText = deniedMsg;
-                    } else {
-                        // May come here if global level notifications are disabled
-                        logEl.innerText = "Error occurred: while subscribing. Please try again.";
-                    }
-                    logEl.innerText = JSON.stringify(err);
+                    toggleButton();
+                    // May come here if global level notifications are disabled
+                    showMessage("Error occurred: Please try again. Also please check if you have disabled all notifications in browser setting.");
                     console.log("Error occurred: while subscribing. Please try again.", err);
-                }).finally(_ => buttonEl.disabled = false);
+                })
             }
 
             function unsubscribe() {
-                logEl.innerText = "Unsubscribing....Please wait";
-                buttonEl.disabled = true;
+                showMessage("Unsubscribing....Please wait", true);
 
                 // Delete registration token.
                 messaging.getToken(getTokenOptions).then((currentToken) => {
                     messaging.deleteToken(currentToken).then(() => {
                         localStorage.setItem("isSubscribed", "no");
-                        buttonEl.innerText = "Subscribe";
-                        logEl.innerText = "Unsubscribed. You will not get notifications going forward.";
+                        setName("Subscribe");
+                        showMessage("Unsubscribed. You will not get notifications going forward.", true);
                     }).catch((err) => {
-                        logEl.innerText = "Error: Couldn't unsubscribe. Please try again";
+                        toggleButton();
+                        showMessage("Error: Couldn't unsubscribe. Please try again");
                         console.log('Unable to delete token. ', err);
-                    }).finally(_ => buttonEl.disabled = false);
+                    });
 
                 }).catch((err) => {
-                    logEl.innerText = "Error occurred: Couldn't unsubscribe. Please try again."
+                    toggleButton();
+                    showMessage("Error occurred: Couldn't unsubscribe. Please try again.")
                     console.log("Error retrieving registration token. ", err);
-                }).finally(_ => buttonEl.disabled = false);
+                });
             }
 
-        } 
-        else {
-            buttonEl.disabled = true;
-            logEl.innerText = "This browser does not support web notifications. Please use other browser."
-            console.log("This browser doesn't support web notifications");
+            onNotificationButtonClick = handleSubscription;
         }
 
+        notificationInit()
     </script>
+
 </body>
 
 </html>
