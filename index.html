@@ -120,7 +120,7 @@
 
                 if (localStorage.getItem("isSubscribed") === "yes") {
                     setName("Unsubscribe", true);
-                    showMessage("You have already subscribed. You will get web notification whenever new videos get uploaded.", true);
+                    console.log("You have already subscribed. You will get web notification whenever new videos get uploaded.");
                 }
             }
 
@@ -147,11 +147,8 @@
             }
 
 
-            function showMessage(msg, onlyLogToConsole) {
-                if (!onlyLogToConsole) {
-
-                }
-                console.log(msg);
+            function showMessage(msg) {
+                alert(msg);
             }
 
             function setName(str, shouldToggleButton) {
@@ -167,14 +164,14 @@
             }
 
             function subscribe() {
-                showMessage("Subscribing....Please wait", true);
+                console.log("Subscribing....Please wait");
                 // Get registration token. Initially this makes a network call, once retrieved
                 // subsequent calls to getToken will return from cache.
                 messaging.getToken(getTokenOptions).then((currentToken) => {
                     if (currentToken) {
                         localStorage.setItem("isSubscribed", "yes");
                         setName("Unsubscribe");
-                        showMessage("Subscribed. Thanks! You will get web notification whenever new videos get uploaded", true);
+                        console.log("Subscribed. Thanks! You will get web notification whenever new videos get uploaded");
                         console.log("token: ", currentToken);
                     } else {
                         // Should rarely come here. 
@@ -189,14 +186,14 @@
             }
 
             function unsubscribe() {
-                showMessage("Unsubscribing....Please wait", true);
+                console.log("Unsubscribing....Please wait");
 
                 // Delete registration token.
                 messaging.getToken(getTokenOptions).then((currentToken) => {
                     messaging.deleteToken(currentToken).then(() => {
                         localStorage.setItem("isSubscribed", "no");
                         setName("Subscribe");
-                        showMessage("Unsubscribed. You will not get notifications going forward.", true);
+                        console.log("Unsubscribed. You will not get notifications going forward.");
                     }).catch((err) => {
                         toggleButton();
                         showMessage("Error: Couldn't unsubscribe. Please try again");
