@@ -115,7 +115,7 @@
                     // Todo: handle. Show alert?
                 });
 
-                if (localStorage.getItem("isSubscribed") === "yes") {
+                if (isSubscribed()) {
                     setButton(true);
                     console.log("You have already subscribed. You will get web notification whenever new videos get uploaded.");
                 }
@@ -130,7 +130,7 @@
                         return;
                     }
 
-                    if (localStorage.getItem("isSubscribed") === "yes") {
+                    if (isSubscribed()) {
                         unsubscribe();
                     } else {
                         subscribe();
@@ -143,6 +143,9 @@
 
             }
 
+            function isSubscribed(){
+                return localStorage.getItem("isSubscribed") === "yes" && Notification.permission === "granted"
+            }
 
             function showMessage(msg) {
                 alert(msg);
