@@ -9,23 +9,45 @@
 <body>
     <p>Redirecting to Peepalfarm video...</p>
 
-    <!-- <a id="youtube_link" target="_self" href="intent://m.youtube.com/watch?v=ja00jEp6P1g/#Intent;package=com.google.android.youtube;scheme=https;end" style="text-decoration: none; color: rgb(14, 113, 226); font-size: 20px; font-family: system-ui;">CLICK HERE</a> -->
+    <!-- <a id="youtube_link" target="_self" href="intent://m.youtube.com/watch?v=ja00jEp6P1g/#Intent;package=com.google.android.youtube;scheme=https;end">CLICK HERE</a> -->
     <a id="youtube_link" target="_self" href="">Watch Video</a>
 
     <script>
-        const urlToOpen = window.location.href.split("urlToOpen=")[1];
-        console.log("redirect.html: window.location.href: ", window.location.href);
-        console.log("redirect.html: urlToOpen: ", urlToOpen);
-        const aTag = document.querySelector("#youtube_link");
-        const isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
-        
-        if(isAndroid) {
-            aTag.href = urlToOpen.replace("https", "intent") + "/#Intent;package=com.google.android.youtube;scheme=https;end";
+        const strArr = window.location.href.split("title=")[1].split("&image=");
+        const title = strArr[0];
+        const image = strArr[1];
+        let urlToOpen;
+        let newImageUrl;
+
+
+        // image is optional while sending notification so it might get missed
+        if(image === "undefined"){
+            urlToOpen = "m.youtube.com/c/PeepalFarm/videos";
+            newImageUrl = "https://img.youtube.com/vi/F1g_4Wtp4fs/hqdefault.jpg";
         } else {
-            aTag.href = urlToOpen;
+            const imageSplitArr = image.split("/");
+            const videoId = imageSplitArr.slice(-2, -1)[0]; // take second last element of the splitted array
+            urlToOpen = "m.youtube.com/watch?v=" + videoId ;
+            imageSplitArr[imageSplitArr.length - 1] = "hqdefault.jpg"; // replace filename
+            newImageUrl = imageSplitArr.join("/");
         }
 
-        //window.open(urlToOpen, "_self");
+        console.log("redirect.html: window.location.href: ", window.location.href);
+        console.log("redirect.html: strArr: ", strArr);
+
+        const aTag = document.querySelector("#youtube_link");
+
+        const isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
+
+
+        //example intent url = intent://m.youtube.com/watch?v=-a_R5znrOJA
+        
+        if(isAndroid) {
+            aTag.href =  "intent://" + urlToOpen + "/#Intent;package=com.google.android.youtube;scheme=https;end";
+        } else {
+            aTag.href = "https://" + urlToOpen;
+        }
+
     </script>
 </body>
 </html>

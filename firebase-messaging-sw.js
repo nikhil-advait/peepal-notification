@@ -24,17 +24,17 @@ const firebaseConfig = {
     measurementId: "G-M67JMQPDLD"
 };
 
-firebase.initializeApp(firebaseConfig)
+firebase.initializeApp(firebaseConfig);
 
 
 // Add 'notificationclick' event handler before firebase.messaging() call
 self.addEventListener('notificationclick', function (e) {
-    console.log('SW notification click event', e)
-    console.log('urlToOpen: ', e.notification.data.FCM_MSG.data.urlToOpen)
+    console.log('SW notification click event', e);
+    console.log('urlToOpen: ', e.notification.data.FCM_MSG.data.urlToOpen);
     e.notification.close();
-    const defaultUrlToOpen = "https://www.youtube.com/c/PeepalFarm/videos";
-    const urlToOpen = e.notification.data.FCM_MSG.data.urlToOpen || defaultUrlToOpen;
-    const redirectUrl = "redirect?urlToOpen=" + urlToOpen;
+    const title = e.notification.title;
+    const image = e.notification.image; //image is optional
+    const redirectUrl = "redirect?title=" + title + "&image=" + image; //image could be "undefined"
     
     e.waitUntil(clients.openWindow(redirectUrl));
 
