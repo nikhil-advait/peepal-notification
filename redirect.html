@@ -1,53 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/peepalfarm/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/peepalfarm/favicon-16x16.png">
+    <style>
+        .ytImgContainer img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .ytImgContainer {
+            margin: 0 auto;
+            max-width: 604px;
+            width: 100%;
+            border: 1px solid #73AD21;
+        }
+
+        .ytImgContainer:after {
+            clear: both;
+        }
+
+        .ytImgContainer:before,
+        .ytImgContainer:after {
+            content: "";
+            display: table;
+        }
+
+        div.ytImgThumbBox {
+            position: relative !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden;
+        }
+
+        div.ytImgThumbPlay {
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            width: 48px !important;
+            height: 48px !important;
+            margin: -24px 0 0 -24px !important;
+        }
+
+        img.ytImgThumbImg {
+            width: 100% !important;
+            height: 100% !important;
+            margin: -9.5% 0px -12%;
+            border-radius: 30px;
+        }
+
+        .yt-title {
+            margin-left: 6px;
+            font-family: "Roboto", "Arial", sans-serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            max-height: 4rem;
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            white-space: normal;
+        }
+    </style>
+
     <title>Peepalfarm</title>
 </head>
-<body>
-    <p>Redirecting to Peepalfarm video...</p>
 
-    <!-- <a id="youtube_link" target="_self" href="intent://m.youtube.com/watch?v=ja00jEp6P1g/#Intent;package=com.google.android.youtube;scheme=https;end">CLICK HERE</a> -->
-    <a id="youtube_link" target="_self" href="">Watch Video</a>
+<body>
+    <p>Watch following PeepalFarm video by clicking it!</p>
+
+    <!-- reference: https://jsfiddle.net/PromInc/y8xppfoj/-->
+    <div class="ytImgContainer">
+        <a id="a-tag" target="_self">
+            <div class="ytImgWrapper">
+                <div class="ytImgThumbBox">
+                    <img class="ytImgThumbImg" alt="peepalform video thumbnail">
+                    <div class="ytImgThumbPlay">
+                        <img src="youtube-play-icon.png" class="ytImgThumbPlayButton">
+                    </div>
+                </div>
+            </div>
+        </a>
+        <p class="yt-title"></p>
+    </div>
 
     <script>
+        const aEl =   document.querySelector("#a-tag");
+        const titleEl = document.querySelector(".yt-title");
+        const imgEl = document.querySelector(".ytImgThumbBox img");
         const strArr = window.location.href.split("title=")[1].split("&image=");
-        const title = strArr[0];
+        const title = window.decodeURI(strArr[0]);
         const image = strArr[1];
         let urlToOpen;
         let newImageUrl;
 
+        titleEl.innerText = title;
 
         // image is optional while sending notification so it might get missed
-        if(image === "undefined"){
+        if (image === "undefined") {
             urlToOpen = "m.youtube.com/c/PeepalFarm/videos";
             newImageUrl = "https://img.youtube.com/vi/F1g_4Wtp4fs/hqdefault.jpg";
         } else {
             const imageSplitArr = image.split("/");
             const videoId = imageSplitArr.slice(-2, -1)[0]; // take second last element of the splitted array
-            urlToOpen = "m.youtube.com/watch?v=" + videoId ;
+            urlToOpen = "m.youtube.com/watch?v=" + videoId;
             imageSplitArr[imageSplitArr.length - 1] = "hqdefault.jpg"; // replace filename
             newImageUrl = imageSplitArr.join("/");
         }
 
+        imgEl.src = newImageUrl;
+
         console.log("redirect.html: window.location.href: ", window.location.href);
         console.log("redirect.html: strArr: ", strArr);
 
-        const aTag = document.querySelector("#youtube_link");
-
         const isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
 
-
-        //example intent url = intent://m.youtube.com/watch?v=-a_R5znrOJA
-        
-        if(isAndroid) {
-            aTag.href =  "intent://" + urlToOpen + "/#Intent;package=com.google.android.youtube;scheme=https;end";
+        if (isAndroid) {
+            //example intent url = intent://m.youtube.com/watch?v=-a_R5znrOJA
+            aEl.href = "intent://" + urlToOpen + "/#Intent;package=com.google.android.youtube;scheme=https;end";
         } else {
-            aTag.href = "https://" + urlToOpen;
+            aEl.href = "https://" + urlToOpen;
         }
 
     </script>
 </body>
+
 </html>
