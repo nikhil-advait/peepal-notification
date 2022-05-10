@@ -118,7 +118,7 @@
                 });
 
                 if (localStorage.getItem("isSubscribed") === "yes") {
-                    toggleButton();
+                    setButton(true);
                     console.log("You have already subscribed. You will get web notification whenever new videos get uploaded.");
                 }
             }
@@ -150,8 +150,8 @@
                 alert(msg);
             }
 
-            function toggleButton() {
-                inputButtonEl.checked = !inputButtonEl.checked;
+            function setButton(flag) {
+                inputButtonEl.checked = flag;
             }
 
             function subscribe() {
@@ -168,7 +168,7 @@
                         showMessage("Error occurred while subscribing. Please try again");
                     }
                 }).catch((err) => {
-                    toggleButton();
+                    setButton(false);
                     // May come here if global level notifications are disabled
                     showMessage("Error occurred: Please try again. Also please check if you have disabled all notifications in browser setting.");
                     console.log("Error occurred: while subscribing. Please try again.", err);
@@ -184,13 +184,13 @@
                         localStorage.setItem("isSubscribed", "no");
                         console.log("Unsubscribed. You will not get notifications going forward.");
                     }).catch((err) => {
-                        toggleButton();
+                        setButton(true);
                         showMessage("Error: Couldn't unsubscribe. Please try again");
                         console.log('Unable to delete token. ', err);
                     });
 
                 }).catch((err) => {
-                    toggleButton();
+                    setButton(true);
                     showMessage("Error occurred: Couldn't unsubscribe. Please try again.")
                     console.log("Error retrieving registration token. ", err);
                 });
