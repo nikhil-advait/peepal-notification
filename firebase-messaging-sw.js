@@ -32,8 +32,8 @@ self.addEventListener('notificationclick', function (e) {
     console.log('SW notification click event', e);
     console.log('urlToOpen: ', e.notification.data.FCM_MSG.data.urlToOpen);
     e.notification.close();
-    const title = e.notification.title;
-    const image = e.notification.image; //image is optional
+    const title = e.notification.title || e.notification.body;
+    const image = e.notification.data.FCM_MSG.notification.image; //image is optional
     const redirectUrl = "redirect?title=" + title + "&image=" + image; //image could be "undefined"
     
     e.waitUntil(clients.openWindow(redirectUrl));

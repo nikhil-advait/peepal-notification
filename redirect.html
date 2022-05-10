@@ -99,11 +99,10 @@
         let urlToOpen;
         let newImageUrl;
 
-        // Title is also optional in firebase messaging console and by mistake could remain empty. So handle that
-        titleEl.innerText = title === undefined ? "Watch all PeepalFarm yoube videos" : title;
+        titleEl.innerText = title;
 
         // image is optional while sending notification so it might get missed
-        if (image === "undefined") {
+        if (!image || image === "undefined") {
             urlToOpen = "m.youtube.com/c/PeepalFarm/videos";
             newImageUrl = "https://img.youtube.com/vi/F1g_4Wtp4fs/hqdefault.jpg";
         } else {
