@@ -123,6 +123,8 @@
         if (isAndroid) {
             //example intent url = intent://m.youtube.com/watch?v=-a_R5znrOJA
             aEl.href = "intent://" + urlToOpen + "/#Intent;package=com.google.android.youtube;scheme=https;end";
+            // https://stackoverflow.com/questions/23306882/javascript-close-current-window
+            window.open('','_self').close(); // hack to close the current window
         } else {
             aEl.href = "https://" + urlToOpen;
         }
