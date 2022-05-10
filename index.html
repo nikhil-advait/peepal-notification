@@ -69,7 +69,7 @@
         /* =======================  End of notification button style =======================  */
     </style>
     <div>v2</div>
-    <span id="notification-btn-text">Subscribe</span>
+    <span id="notification-btn-text">Subscribe to web notifications:</span>
     <label class="notification-switch">
         <input type="checkbox" onclick="onNotificationButtonClick(event)">
         <span class="notification-slider"></span>
@@ -82,12 +82,11 @@
 
     <script>
 
-        let onNotificationButtonClick;
-
         function notificationInit () {
             const getTokenOptions = { vapidKey: 'BB7jub7rNDWheGM59uUeJnRMTiRpaHMLdBOR7hwr4to_smIdG1PZ6WQgtsUIVq9lL9Tv9F7rKAmTpqVh7iLH8TA' };
             const buttonEl = document.querySelector(".notification-switch");
             const buttonNameEl = document.querySelector("#notification-btn-text");
+            let inputButtonEl = document.querySelector(".notification-switch input");
             let messaging;
 
             if (firebase.messaging.isSupported()) {
@@ -119,7 +118,7 @@
                 });
 
                 if (localStorage.getItem("isSubscribed") === "yes") {
-                    setName("Unsubscribe", true);
+                    toggleButton();
                     console.log("You have already subscribed. You will get web notification whenever new videos get uploaded.");
                 }
             }
@@ -151,16 +150,8 @@
                 alert(msg);
             }
 
-            function setName(str, shouldToggleButton) {
-                buttonNameEl.innerText = str;
-                if (shouldToggleButton) {
-                    toggleButton()
-                }
-            }
-
             function toggleButton() {
-                let inputEl = document.querySelector(".notification-switch input");
-                inputEl.checked = !inputEl.checked;
+                inputButtonEl.checked = !inputButtonEl.checked;
             }
 
             function subscribe() {
@@ -170,7 +161,6 @@
                 messaging.getToken(getTokenOptions).then((currentToken) => {
                     if (currentToken) {
                         localStorage.setItem("isSubscribed", "yes");
-                        setName("Unsubscribe");
                         console.log("Subscribed. Thanks! You will get web notification whenever new videos get uploaded");
                         console.log("token: ", currentToken);
                     } else {
@@ -192,7 +182,6 @@
                 messaging.getToken(getTokenOptions).then((currentToken) => {
                     messaging.deleteToken(currentToken).then(() => {
                         localStorage.setItem("isSubscribed", "no");
-                        setName("Subscribe");
                         console.log("Unsubscribed. You will not get notifications going forward.");
                     }).catch((err) => {
                         toggleButton();
@@ -207,10 +196,10 @@
                 });
             }
 
-            onNotificationButtonClick = handleSubscription;
+            return handleSubscription;
         }
 
-        notificationInit()
+        let onNotificationButtonClick = notificationInit();
     </script>
 
 </body>
