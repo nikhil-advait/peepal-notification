@@ -76,7 +76,7 @@
 
     <!-- reference: https://jsfiddle.net/PromInc/y8xppfoj/-->
     <div class="ytImgContainer">
-        <a id="a-tag" target="_self">
+        <a id="a-tag" target="_self" onclick="closeWindowAfterSecs(10)">
             <div class="ytImgWrapper">
                 <div class="ytImgThumbBox">
                     <img class="ytImgThumbImg" alt="peepalform video thumbnail">
@@ -115,18 +115,22 @@
 
         imgEl.src = newImageUrl;
 
-        console.log("redirect.html: window.location.href: ", window.location.href);
-        console.log("redirect.html: strArr: ", strArr);
-
         const isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
 
         if (isAndroid) {
             //example intent url = intent://m.youtube.com/watch?v=-a_R5znrOJA
             aEl.href = "intent://" + urlToOpen + "/#Intent;package=com.google.android.youtube;scheme=https;end";
             // https://stackoverflow.com/questions/23306882/javascript-close-current-window
-            window.open('','_self').close(); // hack to close the current window
+            // window.open('','_self').close(); // hack to close the current window
         } else {
             aEl.href = "https://" + urlToOpen;
+        }
+
+
+        function closeWindowAfterSecs(secs){
+            setTimeout(function(){
+                window.open('','_self').close(); // hack to close the current window
+            },secs*1000)
         }
 
     </script>
